@@ -15,7 +15,6 @@ AND Current_Period.OrderMonth = Previous_Period.OrderMonth + 1;
 
 -- 4.2. Apskaičiuoti Grynojo pelno maržą, angl. Net Profit Margin, kad sužinotume, kiek pelno įmonė uždirba po visų išlaidų. 
 -- Naudoti lenteles Sales_SalesOrderHeader, Sales_SalesOrderDetail, Production_ProductCostHistory.
-
 WITH RevenueAndExpenses AS
 (SELECT 
 	Sales_SalesOrderHeader.SalesOrderID, 
