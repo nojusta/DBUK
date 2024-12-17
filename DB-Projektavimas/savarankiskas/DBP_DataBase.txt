@@ -1,0 +1,296 @@
+-- -------------------------------------------------
+-- DROP TABLES
+-- -------------------------------------------------
+
+DROP TABLE IF EXISTS Komentaras;
+DROP TABLE IF EXISTS Progresas;
+DROP TABLE IF EXISTS Ataskaita;
+DROP TABLE IF EXISTS Uzduotis;
+DROP TABLE IF EXISTS Resursas;
+DROP TABLE IF EXISTS Renginys;
+DROP TABLE IF EXISTS Projektas;
+DROP TABLE IF EXISTS Klientas;
+DROP TABLE IF EXISTS Narys;
+DROP TABLE IF EXISTS Komanda;
+DROP TABLE IF EXISTS Organizacija;
+DROP TABLE IF EXISTS Vartotojas;
+
+-- -------------------------------------------------
+-- CREATE TABLES
+-- -------------------------------------------------
+
+-- Sukurti Vartotojas lentele
+CREATE TABLE Vartotojas (
+    VartotojoID INT PRIMARY KEY,
+    Vartotojo_vardas VARCHAR(50),
+    Vardas VARCHAR(50),
+    Pavarde VARCHAR(50),
+    Gimimo_data DATE,
+    Telefono_numeris VARCHAR(15),
+    El_pastas VARCHAR(100),
+    Slaptazodis VARCHAR(100)
+);
+
+-- Sukurti Organizacija lentele
+CREATE TABLE Organizacija (
+    OrganizacijosID INT PRIMARY KEY,
+    Pavadinimas VARCHAR(50),
+    Skyrius VARCHAR(50)
+);
+
+-- Sukurti Komanda lentele
+CREATE TABLE Komanda (
+    KomandosID INT PRIMARY KEY,
+	OrganizacijosID INT,
+    Pavadinimas VARCHAR(50),
+    Sukurimo_data DATE,
+    Tipas VARCHAR(50),
+    Paskirtis VARCHAR(255),
+    
+    FOREIGN KEY (OrganizacijosID) REFERENCES Organizacija (OrganizacijosID)
+);
+
+-- Sukurti Narys lentele
+CREATE TABLE Narys (
+    NarioID INT PRIMARY KEY,
+    VartotojoID INT,
+    KomandosID INT,
+    Pareigos VARCHAR(50),
+    
+    FOREIGN KEY (VartotojoID) REFERENCES Vartotojas (VartotojoID),
+    FOREIGN KEY (KomandosID) REFERENCES Komanda (KomandosID)
+);
+
+-- Sukurti Klientas lentele
+CREATE TABLE Klientas (
+    KlientoID INT PRIMARY KEY,
+    Imones_pavadinimas VARCHAR(50),
+    Telefono_numeris VARCHAR(15),
+    El_pastas VARCHAR(100)
+);
+
+-- Sukurti Projektas lentele
+CREATE TABLE Projektas (
+    ProjektoID INT PRIMARY KEY,
+    KomandosID INT,
+    KlientoID INT,
+    Pavadinimas VARCHAR(50),
+    Tikslas VARCHAR(255),
+    Aprasymas VARCHAR(255),
+    Pradzios_data DATE,
+    Pabaigos_data DATE,
+    
+    FOREIGN KEY (KomandosID) REFERENCES Komanda (KomandosID),
+    FOREIGN KEY (KlientoID) REFERENCES Klientas (KlientoID)
+);
+
+-- Sukurti Renginys lentele
+CREATE TABLE Renginys (
+    RenginioID INT PRIMARY KEY,
+    OrganizacijosID INT,
+    Pavadinimas VARCHAR(50),
+    Renginio_data DATE,
+    Vieta VARCHAR(50),
+    
+    FOREIGN KEY (OrganizacijosID) REFERENCES Organizacija (OrganizacijosID)
+);
+
+-- Sukurti Resursas lentele
+CREATE TABLE Resursas (
+    ResursoID INT PRIMARY KEY,
+    ProjektoID INT,
+    Pavadinimas VARCHAR(50),
+    Tipas VARCHAR(50),
+    
+    FOREIGN KEY (ProjektoID) REFERENCES Projektas (ProjektoID)
+);
+
+-- Sukurti Uzduotis lentele
+CREATE TABLE Uzduotis (
+    UzduotiesID INT PRIMARY KEY AUTO_INCREMENT,
+    ProjektoID INT,
+    Pavadinimas VARCHAR(50),
+    Aprasymas VARCHAR(255),
+    Pradzios_data DATE,
+    Pabaigos_data DATE,
+    Statusas VARCHAR(50),
+    NarioID INT,
+    
+    FOREIGN KEY (ProjektoID) REFERENCES Projektas (ProjektoID),
+    FOREIGN KEY (NarioID) REFERENCES Narys (NarioID)
+);
+
+-- Sukurti Ataskaita lentele
+CREATE TABLE Ataskaita (
+    AtaskaitosID INT PRIMARY KEY,
+    Pavadinimas VARCHAR(50),
+    Sukurimo_data DATE,
+    Aprasymas VARCHAR(1000),
+    Rezultatas VARCHAR(1000)
+);
+
+-- Sukurti Progresas lentele
+CREATE TABLE Progresas (
+    ProgresasID INT PRIMARY KEY,
+    UzduotiesID INT UNIQUE, -- Vienas su vienu rysys su Ataskaita
+    AtaskaitosID INT, 
+    Stadija VARCHAR(50),
+    Procentai VARCHAR(50),
+    
+    FOREIGN KEY (UzduotiesID) REFERENCES Uzduotis (UzduotiesID),
+    FOREIGN KEY (AtaskaitosID) REFERENCES Ataskaita (AtaskaitosID)
+);
+
+-- Sukurti Komentaras lentele
+CREATE TABLE Komentaras (
+    KomentaroID INT PRIMARY KEY,
+    UzduotiesID INT,
+    VartotojoID INT,
+    Pavadinimas VARCHAR(50),
+    Tekstas VARCHAR(1000),
+    Sukurimo_data DATE,
+
+    FOREIGN KEY (UzduotiesID) REFERENCES Uzduotis (UzduotiesID),
+    FOREIGN KEY (VartotojoID) REFERENCES Vartotojas (VartotojoID)
+);
+
+-- -------------------------------------------------
+-- INSERT DATA
+-- -------------------------------------------------
+
+-- Vartotojas
+INSERT INTO Vartotojas (VartotojoID, Vartotojo_vardas, Vardas, Pavarde, Gimimo_data, Telefono_numeris, El_pastas, Slaptazodis) VALUES (1, 'user1', 'Jonas', 'Jonaitis', '1990-01-01', '123456789', 'jonas@example.com', 'password123');
+INSERT INTO Vartotojas (VartotojoID, Vartotojo_vardas, Vardas, Pavarde, Gimimo_data, Telefono_numeris, El_pastas, Slaptazodis) VALUES (2, 'user2', 'Petras', 'Petraitis', '1985-05-10', '987654321', 'petras@example.com', 'password456');
+INSERT INTO Vartotojas (VartotojoID, Vartotojo_vardas, Vardas, Pavarde, Gimimo_data, Telefono_numeris, El_pastas, Slaptazodis) VALUES (3, 'user3', 'Ona', 'Onaite', '1992-07-20', '456123789', 'ona@example.com', 'password789');
+INSERT INTO Vartotojas (VartotojoID, Vartotojo_vardas, Vardas, Pavarde, Gimimo_data, Telefono_numeris, El_pastas, Slaptazodis) VALUES (4, 'user4', 'Asta', 'Astaityte', '1995-12-15', '789321654', 'asta@example.com', 'password101');
+INSERT INTO Vartotojas (VartotojoID, Vartotojo_vardas, Vardas, Pavarde, Gimimo_data, Telefono_numeris, El_pastas, Slaptazodis) VALUES (5, 'user5', 'Ignas', 'Ignaitis', '1975-10-15', '789365654', 'ignas@example.com', 'password123');
+
+-- Organizacija
+INSERT INTO Organizacija (OrganizacijosID, Pavadinimas, Skyrius) VALUES (1, 'IT Organizacija', 'Programavimas');
+INSERT INTO Organizacija (OrganizacijosID, Pavadinimas, Skyrius) VALUES (2, 'Rinkodaros Organizacija', 'Marketingas');
+INSERT INTO Organizacija (OrganizacijosID, Pavadinimas, Skyrius) VALUES (3, 'Pardavimu Organizacija', 'Pardavimai');
+INSERT INTO Organizacija (OrganizacijosID, Pavadinimas, Skyrius) VALUES (4, 'KonsultacijuOrganizacija', 'Konsultacijos');
+
+-- Komanda
+INSERT INTO Komanda (KomandosID, OrganizacijosID, Pavadinimas, Sukurimo_data, Tipas, Paskirtis) VALUES (1, 1, 'Komanda Alfa', '2023-01-01', 'IT', 'Programu kurimas');
+INSERT INTO Komanda (KomandosID, OrganizacijosID, Pavadinimas, Sukurimo_data, Tipas, Paskirtis) VALUES (2, 2, 'Komanda Beta', '2023-02-01', 'Marketingas', 'Rinkodaros kampanijos vykdymas');
+INSERT INTO Komanda (KomandosID, OrganizacijosID, Pavadinimas, Sukurimo_data, Tipas, Paskirtis) VALUES (3, 1, 'Komanda Gamma', '2023-03-01', 'Pardavimai', 'Nauju klientu paieska');
+INSERT INTO Komanda (KomandosID, OrganizacijosID, Pavadinimas, Sukurimo_data, Tipas, Paskirtis) VALUES (4, 2, 'Komanda Delta', '2023-04-01', 'Konsultacijos', 'Verslo strategijos tobulinimas');
+
+-- Narys
+INSERT INTO Narys (NarioID, VartotojoID, KomandosID, Pareigos) VALUES (1, 1, 1, 'Komandos vadovas');
+INSERT INTO Narys (NarioID, VartotojoID, KomandosID, Pareigos) VALUES (2, 2, 1, 'Programuotojas');
+INSERT INTO Narys (NarioID, VartotojoID, KomandosID, Pareigos) VALUES (3, 3, 2, 'Rinkodaros specialistas');
+INSERT INTO Narys (NarioID, VartotojoID, KomandosID, Pareigos) VALUES (4, 4, 3, 'Pardavimu vadovas');
+
+-- Klientas
+INSERT INTO Klientas (KlientoID, Imones_pavadinimas, Telefono_numeris, El_pastas) VALUES (1, 'UAB Pavyzdys', '860000000', 'info@pavyzdys.lt');
+INSERT INTO Klientas (KlientoID, Imones_pavadinimas, Telefono_numeris, El_pastas) VALUES (2, 'AB Imone', '860111111', 'kontaktas@imone.lt');
+INSERT INTO Klientas (KlientoID, Imones_pavadinimas, Telefono_numeris, El_pastas) VALUES (3, 'MB Verslas', '860123456', 'info@verslas.lt');
+INSERT INTO Klientas (KlientoID, Imones_pavadinimas, Telefono_numeris, El_pastas) VALUES (4, 'UAB Partneris', '860789012', 'kontaktas@partneris.lt');
+
+-- Projektas
+INSERT INTO Projektas (ProjektoID, KomandosID, KlientoID, Pavadinimas, Tikslas, Aprasymas, Pradzios_data, Pabaigos_data) VALUES (1, 1, 1, 'Sistemos kurimas', 'Sukurti nauja sistema', 'Sistemos kurimas nuo nulio', '2023-01-15', '2023-06-15');
+INSERT INTO Projektas (ProjektoID, KomandosID, KlientoID, Pavadinimas, Tikslas, Aprasymas, Pradzios_data, Pabaigos_data) VALUES (2, 2, 2, 'Rinkodaros kampanija', 'Padidinti pardavimus', 'Kampanijos kurimas', '2023-03-01', '2023-08-01');
+INSERT INTO Projektas (ProjektoID, KomandosID, KlientoID, Pavadinimas, Tikslas, Aprasymas, Pradzios_data, Pabaigos_data) VALUES (3, 3, 3, 'Pardavimu pletra', 'Didinti pardavimus uzsienio rinkose', 'Rinkos analize ir nauju partneriu paieska', '2023-06-01', '2023-12-01');
+INSERT INTO Projektas (ProjektoID, KomandosID, KlientoID, Pavadinimas, Tikslas, Aprasymas, Pradzios_data, Pabaigos_data) VALUES (4, 4, 4, 'Konsultaciju tobulinimas', 'Pagerinti konsultavimo paslaugas', 'Paslaugu analize ir gerinimas', '2023-05-01', '2023-11-01');
+
+-- Renginys
+INSERT INTO Renginys (RenginioID, OrganizacijosID, Pavadinimas, Renginio_data, Vieta) VALUES (1, 1, 'Sistemos pristatymas', '2023-06-10', 'Vilnius');
+INSERT INTO Renginys (RenginioID, OrganizacijosID, Pavadinimas, Renginio_data, Vieta) VALUES (2, 2, 'Analizes rezultatu aptarimas', '2023-08-01', 'Kaunas');
+INSERT INTO Renginys (RenginioID, OrganizacijosID, Pavadinimas, Renginio_data, Vieta) VALUES (3, 3, 'Pardavimu strategijos aptarimas', '2023-07-15', 'Vilnius');
+INSERT INTO Renginys (RenginioID, OrganizacijosID, Pavadinimas, Renginio_data, Vieta) VALUES (4, 4, 'Konsultacijy apzvalga', '2023-10-01', 'Kaunas');
+
+-- Resursas
+INSERT INTO Resursas (ResursoID, ProjektoID, Pavadinimas, Tipas) VALUES (1, 1, 'Kompiuterine iranga', 'Technine iranga');
+INSERT INTO Resursas (ResursoID, ProjektoID, Pavadinimas, Tipas) VALUES (2, 2, 'Reklamos biudzetas', 'Finansai');
+INSERT INTO Resursas (ResursoID, ProjektoID, Pavadinimas, Tipas) VALUES (3, 3, 'Pardavimo mokymai', 'Zmogiskieji istekliai');
+INSERT INTO Resursas (ResursoID, ProjektoID, Pavadinimas, Tipas) VALUES (4, 4, 'Analitine iranga', 'Technine iranga');
+
+-- Uzduotis
+INSERT INTO Uzduotis (UzduotiesID, ProjektoID, Pavadinimas, Aprasymas, Pradzios_data, Pabaigos_data, Statusas, NarioID) VALUES (1, 1, 'Duomenu bazes kurimas', 'Sukurti duomenu bazes struktura', '2023-01-20', '2023-02-15', 'Vykdoma', 2);
+INSERT INTO Uzduotis (UzduotiesID, ProjektoID, Pavadinimas, Aprasymas, Pradzios_data, Pabaigos_data, Statusas, NarioID) VALUES (2, 1, 'Sistemos dizainas', 'Sukurti sistemos dizaina pagal reikalavimus', '2023-01-25', '2023-03-01', 'Baigta', 1);
+INSERT INTO Uzduotis (UzduotiesID, ProjektoID, Pavadinimas, Aprasymas, Pradzios_data, Pabaigos_data, Statusas, NarioID) VALUES (3, 2, 'Rinkos analize', 'Surinkti duomenis apie rinkos poreikius ir tendencijas', '2023-03-10', '2023-04-10', 'Baigta', 3);
+INSERT INTO Uzduotis (UzduotiesID, ProjektoID, Pavadinimas, Aprasymas, Pradzios_data, Pabaigos_data, Statusas, NarioID) VALUES (4, 3, 'Potencialiu klientu sarasas', 'Sudaryti potencialiu klientu sarasa', '2023-06-10', '2023-07-10', 'Vykdoma', 4);
+
+-- Ataskaita
+INSERT INTO Ataskaita (AtaskaitosID, Pavadinimas, Sukurimo_data, Aprasymas, Rezultatas) VALUES (1, 'Dizaino kurimo progresas', '2023-02-15', 'Progresas pasiektas pagal grafika.', 'Sekmingai iigyvendinta');
+INSERT INTO Ataskaita (AtaskaitosID, Pavadinimas, Sukurimo_data, Aprasymas, Rezultatas) VALUES (2, 'Duomenu bazes kurimo progresas', '2023-03-01', 'Visi esminiai duomene strukturos elementai sukurti.', 'Uzduotis uzbaigta');
+INSERT INTO Ataskaita (AtaskaitosID, Pavadinimas, Sukurimo_data, Aprasymas, Rezultatas) VALUES (3, 'Analizes progresas', '2023-04-15', 'Analize atlikta sekmingai, rekomendacijos parengtos.', 'Rekomendacijos pateiktos klientui');
+INSERT INTO Ataskaita (AtaskaitosID, Pavadinimas, Sukurimo_data, Aprasymas, Rezultatas) VALUES (4, 'Konsultacije progreso ataskaita', '2023-05-15', 'Konsultacije tobulinimo plano analize', 'Progresas sekmingas');
+
+-- Progresas
+INSERT INTO Progresas (ProgresasID, UzduotiesID, AtaskaitosID, Stadija, Procentai) VALUES (1, 1, 1, 'Pradeta', '30%');
+INSERT INTO Progresas (ProgresasID, UzduotiesID, AtaskaitosID, Stadija, Procentai) VALUES (2, 2, 2, 'Vykdoma', '50%');
+INSERT INTO Progresas (ProgresasID, UzduotiesID, AtaskaitosID, Stadija, Procentai) VALUES (3, 3, 3, 'Baigta', '100%');
+INSERT INTO Progresas (ProgresasID, UzduotiesID, AtaskaitosID, Stadija, Procentai) VALUES (4, 4, 4, 'Pradeta', '25%');
+
+-- Komentaras
+INSERT INTO Komentaras (KomentaroID, UzduotiesID, VartotojoID, Pavadinimas, Tekstas, Sukurimo_data) VALUES (1, 1, 1, 'Pradinis komentaras', 'Reikia patikslinti dizaino reikalavimus', '2023-02-01');
+INSERT INTO Komentaras (KomentaroID, UzduotiesID, VartotojoID, Pavadinimas, Tekstas, Sukurimo_data) VALUES (2, 2, 2, 'Dizaino apzvalga', 'Dizainas atitinka reikalavimus, taciau reikalingos korekcijos.', '2023-03-05');
+INSERT INTO Komentaras (KomentaroID, UzduotiesID, VartotojoID, Pavadinimas, Tekstas, Sukurimo_data) VALUES (3, 3, 3, 'Analizes pastaba', 'Rekomenduoju prideti daugiau saltiniu rinkos analizei.', '2023-04-10');
+INSERT INTO Komentaras (KomentaroID, UzduotiesID, VartotojoID, Pavadinimas, Tekstas, Sukurimo_data) VALUES (4, 3, 4, 'Analizes komentaras', 'Analize atrodo gera, taciau truksta isvadu.', '2023-04-12');
+INSERT INTO Komentaras (KomentaroID, UzduotiesID, VartotojoID, Pavadinimas, Tekstas, Sukurimo_data) VALUES (5, 4, 5, 'Pradinis aptarimas', 'Konsultacijos turetu buti labiau orientuotos i klienta.', '2023-06-15');
+
+-- -------------------------------------------------
+-- TRIGGERS
+-- -------------------------------------------------
+
+-- Padaro, jog neimanoma istrinti vykdomo projekto
+DELIMITER \\
+CREATE TRIGGER PreventActiveProjectDeletion
+BEFORE DELETE ON Projektas
+FOR EACH ROW
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM Uzduotis
+        WHERE ProjektoID = OLD.ProjektoID AND Statusas = 'Vykdoma'
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot delete a project with active tasks.';
+    END IF;
+END;
+\\
+DELIMITER ;
+
+-- Automatiskai pakeicia uzduoties statusa atlikta, kai ateina pabaigos data
+DELIMITER \\
+CREATE TRIGGER UpdateTaskStatusOnDate
+BEFORE UPDATE ON Uzduotis
+FOR EACH ROW
+BEGIN
+    IF NEW.Pabaigos_data <= CURRENT_DATE() AND NEW.Statusas != 'Atlikta' THEN
+        SET NEW.Statusas = 'Atlikta';
+    END IF;
+END;
+\\
+DELIMITER ;
+
+-- Automatinis uzduoties statuso atnaujinimas
+DELIMITER \\
+CREATE TRIGGER UpdateTaskStatusOnAssignment
+AFTER UPDATE ON Uzduotis
+FOR EACH ROW
+BEGIN
+    IF NEW.NarioID IS NOT NULL AND OLD.NarioID IS NULL AND NEW.Statusas = 'Nepradeta' THEN
+        UPDATE Uzduotis
+        SET Statusas = 'Vykdoma'
+        WHERE UzduotiesID = NEW.UzduotiesID;
+    END IF;
+END;
+\\
+DELIMITER ;
+
+-- Automatinis komentaro sukurimo datos irasymas (GOOD)
+DELIMITER \\
+CREATE TRIGGER SetDefaultCommentDate
+BEFORE INSERT ON Komentaras
+FOR EACH ROW
+BEGIN
+    IF NEW.Sukurimo_data IS NULL THEN
+        SET NEW.Sukurimo_data = CURRENT_DATE();
+    END IF;
+END;
+\\
+DELIMITER ;
